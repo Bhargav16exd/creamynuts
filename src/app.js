@@ -13,7 +13,7 @@ import { authenticateSocket } from './middlewares/authMiddleware.js';
 import { socketListener } from './controllers/merchant.controller.js';
 
 
-// Normal Express app
+// Normal Express app declaration
 const app = express();
 
 // Socket server
