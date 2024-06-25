@@ -103,10 +103,13 @@ const confirmOrder = asyncHandler(async(req,res)=>{
          throw new ApiError(400, "Please provide OTP and Order ID and Food ID")
      }
 
+    
+
     const order = await Order.findOneAndUpdate(
         { 
           _id: orderId,
-          "items.foodId": foodId
+          "items.foodId": foodId,
+          "items.OTP": otp
         },
         { 
           $set: { "items.$.orderStatus": "DELIVERED" }
@@ -116,8 +119,10 @@ const confirmOrder = asyncHandler(async(req,res)=>{
         }
       );
 
+      
+
      if(!order){
-         throw new ApiError(404, "Order not found")
+         throw new ApiError(404, "Invalid OTP or Order ID or Food ID")
      }
 
     await order.save()
