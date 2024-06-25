@@ -173,7 +173,7 @@ const checkPayment = asyncHandler(async(req,res)=>{
               await orders.save()
               await Emitter()
              // await messeger(orders)
-              return res.redirect("http://localhost:5173/payment/success")
+              return res.redirect(`http://localhost:5173/payment/success/${orders._id}`)
             }
             else if(response.data?.code == 'PAYMENT_ERROR'){
               orders.transactionStatus = "FAILED"
@@ -195,17 +195,40 @@ async function Emitter(){
   today.setHours(0, 0, 0, 0);
 
   // All Orders
-  const orders = await Order.find({
-      items: { $elemMatch: { orderStatus: { $in: ["PENDING", "ACCEPTED"] } } },
-      createdAt: { $gte: today }
-      // add here payment = success when in prod
-  })
+  const orders = await Order.aggregate([
+    {
+      $match: {
+        items: { $elemMatch: { orderStatus: { $in: ["PENDING"] } } },
+        createdAt: { $gte: today }
+      }
+    },
+    {
+      $project: {
+        customerName: 1,
+        phoneNo: 1,
+        transactionId: 1,
+        transactionStatus: 1,
+        price: 1,
+        items: {
+          $filter: {
+            input: "$items",
+            as: "item",
+            cond: { $eq: ["$$item.orderStatus", "PENDING"] }
+          }
+        },
+        createdAt: 1,
+        updatedAt: 1
+      }
+    }
+  ]);
+  
+  //orders.items.map(item => console.log(item))
   
 
   const ordersWithAMPM = orders.map(order => {
     const createdAtAMPM = order.createdAt.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
     return { 
-        ...order._doc,
+        ...order,
         createdAt: createdAtAMPM 
     };
   });
@@ -247,7 +270,7 @@ const checkOrderStatus = asyncHandler(async(req,res)=>{
     throw new ApiError(400,"Invalid Id")
   }
 
-  const order = await Order.findById(id)
+  const order = await Order.findById(id).select("customerName phoneNo transactionStatus transactionId price")
 
   if(!order){
     throw new ApiError(400,"No Such Orders Exist")
