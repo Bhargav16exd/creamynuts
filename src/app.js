@@ -22,7 +22,7 @@ const server = http.createServer(app)
 
 const io = new Server(server , {
     cors: {
-        origin: 'https://creamynuts.oneminus.in',
+        origin: '*',
         credentials: true
     }
 })
