@@ -85,6 +85,8 @@ const payToPhonePay = asyncHandler(async (req, res) => {
     },
   };
 
+  console.log(payload.redirectUrl)
+
   const bufferObj = Buffer.from(JSON.stringify(payload), "utf-8");
   const base64EncodedPayLoad = bufferObj.toString("base64");
 
