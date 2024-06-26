@@ -85,8 +85,6 @@ const payToPhonePay = asyncHandler(async (req, res) => {
     },
   };
 
-  console.log(payload.redirectUrl)
-
   const bufferObj = Buffer.from(JSON.stringify(payload), "utf-8");
   const base64EncodedPayLoad = bufferObj.toString("base64");
 
@@ -136,6 +134,8 @@ const payToPhonePay = asyncHandler(async (req, res) => {
 // check payment status
 
 const checkPayment = asyncHandler(async(req,res)=>{
+
+    console.log("Checking Payment Status")
 
     const merchantTransactionId = req.params?.transactionId
 
