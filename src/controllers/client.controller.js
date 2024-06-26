@@ -15,7 +15,7 @@ const MERCHANT_ID = "PGTESTPAYUAT143";
 const PHONE_PE_HOST_URL = "https://api-preprod.phonepe.com/apis/pg-sandbox";
 const SALT_INDEX = 1;
 const SALT_KEY = "ab3ab177-b468-4791-8071-275c404d8ab0";
-const APP_BE_URL = "api.oneminus.in";
+const APP_BE_URL = "https://api.oneminus.in";
 
 // Pay to PhonePay API
 
