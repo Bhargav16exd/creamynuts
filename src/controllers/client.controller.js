@@ -173,12 +173,12 @@ const checkPayment = asyncHandler(async(req,res)=>{
               await orders.save()
               await Emitter()
              // await messeger(orders)
-              return res.redirect(`http://localhost:5173/payment/success/${orders._id}`)
+              return res.redirect(`creamynuts.oneminus.in/payment/success/${orders._id}`)
             }
             else if(response.data?.code == 'PAYMENT_ERROR'){
               orders.transactionStatus = "FAILED"
               await orders.save()
-              return res.redirect("http://localhost:5173/payment/failed")
+              return res.redirect("creamynuts.oneminus.in/payment/failed")
             }
         })
         .catch(function (error) {
