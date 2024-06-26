@@ -48,7 +48,7 @@ export const socketListener = () =>{
         ]);
            
         const ordersWithAMPM = orders.map(order => {
-          const createdAtAMPM = order.createdAt.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+          const createdAtAMPM = order.createdAt.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true , timeZone: 'Asia/Kolkata'});
           return { 
               ...order,
               createdAt: createdAtAMPM 
