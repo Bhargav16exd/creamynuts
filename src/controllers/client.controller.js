@@ -11,11 +11,12 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 
 
-const MERCHANT_ID = "PGTESTPAYUAT143";
-const PHONE_PE_HOST_URL = "https://api-preprod.phonepe.com/apis/pg-sandbox";
-const SALT_INDEX = 1;
-const SALT_KEY = "ab3ab177-b468-4791-8071-275c404d8ab0";
-const APP_BE_URL = "https://api.oneminus.in";
+const MERCHANT_ID = process.env.PHONE_PAY_MERCHANT_ID;
+const PHONE_PE_HOST_URL = process.env.PHONE_PAY_HOST_URL;
+const SALT_INDEX = process.env.PHONE_PAY_SALT_INDEX;
+const SALT_KEY = process.env.PHONE_PAY_SALT_KEY;
+const APP_BE_URL = process.env.APP_BE_URL;
+const PRICE_CAP = process.env.PRICE_CAP
 
 // Pay to PhonePay API
 
@@ -48,6 +49,10 @@ const payToPhonePay = asyncHandler(async (req, res) => {
       throw new ApiError(400,"IDs doest not exist in DB");
       }
 
+      if(item.quantity < 1){
+        throw new ApiError(400,"Quantity should be greater than 0")
+      }
+
       totalPrice = totalPrice + food.price * item.quantity
 
       orderItems.push({
@@ -62,13 +67,13 @@ const payToPhonePay = asyncHandler(async (req, res) => {
 
    // price cap handling
    
-    if(totalPrice < 50){
+    if(totalPrice < PRICE_CAP){
       throw new ApiError(400,"Minimum Order Value is 50")
     }
 
   const merchantTransactionIdByUs = Math.floor(Math.random() * 100000000000);
   
-  console.log(totalPrice)
+  console.log(totalPrice) 
 
   // Creating a payload to send to phonepe
 
