@@ -8,13 +8,13 @@ import rateLimit from "express-rate-limit"
 const router = Router();
 
 //rate limit trail
-const rateLimit = rateLimit({
+const rateLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 1, // limit each IP to 100 requests per windowMs
     message: "Too many requests from this IP, please try again after 15 minutes"
 })
 
-router.use(rateLimit)
+router.use(rateLimiter)
 
 
 // Admin Routes
