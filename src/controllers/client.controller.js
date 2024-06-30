@@ -78,11 +78,11 @@ const payToPhonePay = asyncHandler(async (req, res) => {
   // Creating a payload to send to phonepe
 
   const payload = {
-    merchantId: "PGTESTPAYUAT143",
-    merchantTransactionId: "MT7850590068188104",
+    merchantId: MERCHANT_ID,
+    merchantTransactionId: merchantTransactionIdByUs,
     merchantUserId: "MUID123",
     amount: totalPrice * 100,
-    redirectUrl:`${APP_BE_URL}/api/v1/payment/statusAPI/MT7850590068188104/`,
+    redirectUrl:`${APP_BE_URL}/api/v1/payment/statusAPI/${merchantTransactionIdByUs}/`,
     redirectMode: "REDIRECT",
     mobileNumber: "9999999999",
     paymentInstrument: {
@@ -117,7 +117,7 @@ const payToPhonePay = asyncHandler(async (req, res) => {
    await Order.create({
     customerName: name,
     phoneNo: phoneNo,
-    transactionId:"MT7850590068188104",
+    transactionId:merchantTransactionIdByUs,
     price: totalPrice,
     items: orderItems
   });
