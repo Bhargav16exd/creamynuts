@@ -79,10 +79,10 @@ const payToPhonePay = asyncHandler(async (req, res) => {
 
   const payload = {
     merchantId: MERCHANT_ID,
-    merchantTransactionId: merchantTransactionIdByUs,
+    merchantTransactionId: "MT7850590068188104",
     merchantUserId: "MUID123",
     amount: totalPrice * 100,
-    redirectUrl:`${APP_BE_URL}/api/v1/payment/statusAPI/${merchantTransactionIdByUs}/`,
+    redirectUrl:`${APP_BE_URL}/api/v1/payment/statusAPI/MT7850590068188104/`,
     redirectMode: "REDIRECT",
     mobileNumber: "9999999999",
     paymentInstrument: {
@@ -117,7 +117,7 @@ const payToPhonePay = asyncHandler(async (req, res) => {
    await Order.create({
     customerName: name,
     phoneNo: phoneNo,
-    transactionId:merchantTransactionIdByUs,
+    transactionId:"MT7850590068188104",
     price: totalPrice,
     items: orderItems
   });
