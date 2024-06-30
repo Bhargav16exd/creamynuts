@@ -8,6 +8,7 @@ import sha256 from "sha256";
 import io from "../app.js";
 import { messeger } from "../utils/messeger.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import generateUnique4DigitOTP from "../utils/OTP.js";
 
 
 
@@ -58,7 +59,7 @@ const payToPhonePay = asyncHandler(async (req, res) => {
       orderItems.push({
         foodId:item.foodId,
         quantity:item.quantity,
-        OTP: Math.floor(Math.random() * 10000),
+        OTP: generateUnique4DigitOTP(),
         orderStatus:"PENDING"
       })
     
