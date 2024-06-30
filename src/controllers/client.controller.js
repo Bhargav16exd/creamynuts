@@ -84,7 +84,7 @@ const payToPhonePay = asyncHandler(async (req, res) => {
     amount: totalPrice * 100,
     redirectUrl:`${APP_BE_URL}/api/v1/payment/statusAPI/MT7850590068188104/`,
     redirectMode: "REDIRECT",
-    mobileNumber: "9999999999",
+    mobileNumber: phoneNo,
     paymentInstrument: {
       type: "PAY_PAGE",
     },
@@ -137,7 +137,6 @@ const payToPhonePay = asyncHandler(async (req, res) => {
 });
 
 // check payment status
-
 const checkPayment = asyncHandler(async(req,res)=>{
 
     console.log("Checking Payment Status")
