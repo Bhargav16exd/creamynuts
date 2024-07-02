@@ -1,37 +1,45 @@
-
 import axios from "axios";
-
+import {Food} from "../models/food.model.js"
 async function messeger(orderData){
-
-    console.log(orderData.OTP)
 
     const url = process.env.whatsappAPI
     const token = process.env.whatsappToken
     const recipientPhoneNumber = orderData.phoneNo
-    const messageContent = 
-    `Hello ${orderData.customerName} , Thank You for confirming the order of Rs ${orderData.price} . OTP is ${orderData.OTP} 
-     Check your order status here http://localhost:5173/order/status/${orderData._id} 
-     onlyfriends.in
-    ` 
+  
+    const foodNames = await Promise.all(orderData.items.map(async item => {
+      const food = await Food.findById(item.foodId);
+      return { name: food.name, OTP: item.OTP };
+    }));
+  
+    const itemsString = foodNames.map(item => `- ${item.name}: OTP ${item.OTP}`).join('\n');
 
-    
-   const data = {
-    messaging_product: 'whatsapp',
-    recipient_type: 'individual',
-    to: recipientPhoneNumber,
-    type: 'text',
-    text: {
-      preview_url: true,
-      body: messageContent
-    }
-   }
+    const sanitizedItemsString = itemsString.replace(/[\n\r]/g, '');
+  
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    };
 
-   const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
+    const data = {
+      messaging_product: 'whatsapp',
+      to: recipientPhoneNumber,
+      type: 'template',
+      template: {
+        name: 'template02',
+        language: { code: 'en' },
+        components: [
+          {
+            type: 'body',
+            parameters: [
+              { type: 'text', text: orderData.customerName },
+              { type: 'text', text: sanitizedItemsString },
+            ],
+          },
+        ],
+      },
     }
-  };
 
   try {
     const response = await axios.post(url, data, config);

@@ -179,7 +179,7 @@ const checkPayment = asyncHandler(async(req,res)=>{
               orders.transactionStatus = "SUCCESS"
               await orders.save()
               await Emitter()
-             // await messeger(orders)
+              await messeger(orders)
               return res.redirect(`https://creamynuts.oneminus.in/payment/success/${orders._id}`)
             }
             else if(response.data?.code == 'PAYMENT_ERROR'){
