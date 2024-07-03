@@ -18,6 +18,7 @@ const SALT_INDEX = process.env.PHONE_PAY_SALT_INDEX;
 const SALT_KEY = process.env.PHONE_PAY_SALT_KEY;
 const APP_BE_URL = process.env.APP_BE_URL;
 const PRICE_CAP = process.env.PRICE_CAP
+const frontendURL = process.env.CLIENT_URL
 
 // Pay to PhonePay API
 
@@ -180,12 +181,12 @@ const checkPayment = asyncHandler(async(req,res)=>{
               await orders.save()
               await Emitter()
               await messeger(orders)
-              return res.redirect(`https://creamynuts.oneminus.in/payment/success/${orders._id}`)
+              return res.redirect(`${frontendURL}/payment/success/${orders._id}`)
             }
             else if(response.data?.code == 'PAYMENT_ERROR'){
               orders.transactionStatus = "FAILED"
               await orders.save()
-              return res.redirect("https://creamynuts.oneminus.in/payment/failed")
+              return res.redirect(`${frontendURL}/payment/failed/${orders._id}`)
             }
         })
         .catch(function (error) {
