@@ -75,16 +75,16 @@ const payToPhonePay = asyncHandler(async (req, res) => {
 
   const merchantTransactionIdByUs = Math.floor(Math.random() * 100000000000);
   
-  console.log(totalPrice) 
+  console.log(merchantTransactionIdByUs) 
 
   // Creating a payload to send to phonepe
 
   const payload = {
     merchantId: MERCHANT_ID,
-    merchantTransactionId: "MT7850590068188104",
+    merchantTransactionId: merchantTransactionIdByUs,
     merchantUserId: "MUID123",
     amount: totalPrice * 100,
-    redirectUrl:`${APP_BE_URL}/api/v1/payment/statusAPI/MT7850590068188104/`,
+    redirectUrl:`${APP_BE_URL}/api/v1/payment/statusAPI/${merchantTransactionIdByUs}`,
     redirectMode: "REDIRECT",
     mobileNumber: phoneNo,
     paymentInstrument: {
@@ -103,7 +103,7 @@ const payToPhonePay = asyncHandler(async (req, res) => {
 
   const options = {
     method: "post",
-    url: "https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/pay",
+    url: `${PHONE_PE_HOST_URL}/pg/v1/pay`,
     headers: {
       accept: "application/json",
       "Content-Type": "application/json",
@@ -119,7 +119,7 @@ const payToPhonePay = asyncHandler(async (req, res) => {
    await Order.create({
     customerName: name,
     phoneNo: phoneNo,
-    transactionId:"MT7850590068188104",
+    transactionId: merchantTransactionIdByUs,
     price: totalPrice,
     items: orderItems
   });
@@ -162,7 +162,7 @@ const checkPayment = asyncHandler(async(req,res)=>{
 
     const options = {
         method: 'get',
-        url: `https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/status/${MERCHANT_ID}/${merchantTransactionId}`,
+        url: `${PHONE_PE_HOST_URL}/pg/v1/status/${MERCHANT_ID}/${merchantTransactionId}`,
         headers: {
               accept: 'application/json',
               'Content-Type':'application/json',
@@ -180,7 +180,7 @@ const checkPayment = asyncHandler(async(req,res)=>{
               orders.transactionStatus = "SUCCESS"
               await orders.save()
               await Emitter()
-              await messeger(orders)
+             // await messeger(orders)
               return res.redirect(`${frontendURL}/payment/success/${orders._id}`)
             }
             else if(response.data?.code == 'PAYMENT_ERROR'){
