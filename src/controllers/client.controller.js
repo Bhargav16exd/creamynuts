@@ -180,7 +180,7 @@ const checkPayment = asyncHandler(async(req,res)=>{
               orders.transactionStatus = "SUCCESS"
               await orders.save()
               await Emitter()
-             // await messeger(orders)
+              await messeger(orders)
               return res.redirect(`${frontendURL}/payment/success/${orders._id}`)
             }
             else if(response.data?.code == 'PAYMENT_ERROR'){
@@ -206,6 +206,7 @@ async function Emitter(){
   const orders = await Order.aggregate([
     {
       $match: {
+        transactionStatus: "SUCCESS",
         items: { $elemMatch: { orderStatus: { $in: ["PENDING"] } } },
         createdAt: { $gte: today }
       }

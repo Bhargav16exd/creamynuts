@@ -23,6 +23,7 @@ export const socketListener = () =>{
         const orders = await Order.aggregate([
           {
             $match: {
+              transactionStatus: "SUCCESS",
               items: { $elemMatch: { orderStatus: { $in: ["PENDING"] } } },
               createdAt: { $gte: today }
             }
