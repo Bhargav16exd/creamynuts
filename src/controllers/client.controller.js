@@ -166,7 +166,7 @@ const checkPayment = asyncHandler(async(req,res)=>{
         headers: {
               accept: 'application/json',
               'Content-Type':'application/json',
-              'X-MERCHANT-ID':'PGTESTPAYUAT',
+              'X-MERCHANT-ID':MERCHANT_ID,
               'X-VERIFY':xVerify
              }
       };
