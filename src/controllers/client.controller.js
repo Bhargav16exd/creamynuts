@@ -75,8 +75,8 @@ const payToPhonePay = asyncHandler(async (req, res) => {
       throw new ApiError(400,"Minimum Order Value is 50")
     }
 
-   //const merchantTransactionIdByUs = Math.floor(Math.random() * 100000000000);
-   const merchantTransactionIdByUs = "MT7850590068188104"
+   const merchantTransactionIdByUs = Math.floor(Math.random() * 100000000000);
+   //const merchantTransactionIdByUs = "MT7850590068188104"
   
   console.log(merchantTransactionIdByUs) 
 
