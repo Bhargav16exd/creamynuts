@@ -20,6 +20,8 @@ const APP_BE_URL = process.env.APP_BE_URL;
 const PRICE_CAP = process.env.PRICE_CAP
 const frontendURL = process.env.CLIENT_URL
 
+
+
 // Pay to PhonePay API
 
 // This api will get order details
@@ -73,7 +75,8 @@ const payToPhonePay = asyncHandler(async (req, res) => {
       throw new ApiError(400,"Minimum Order Value is 50")
     }
 
-  const merchantTransactionIdByUs = Math.floor(Math.random() * 100000000000);
+   const merchantTransactionIdByUs = Math.floor(Math.random() * 100000000000);
+   //const merchantTransactionIdByUs = "MT7850590068188104"
   
   console.log(merchantTransactionIdByUs) 
 
@@ -116,7 +119,7 @@ const payToPhonePay = asyncHandler(async (req, res) => {
   
   
 
-   await Order.create({
+  const order = await Order.create({
     customerName: name,
     phoneNo: phoneNo,
     transactionId: merchantTransactionIdByUs,
@@ -124,13 +127,17 @@ const payToPhonePay = asyncHandler(async (req, res) => {
     items: orderItems
   });
 
+
+  const token = await order.generateToken()
+
+
            
   await axios
     .request(options)
     .then(function (response) {
       session.commitTransaction()
       const url = response.data.data.instrumentResponse.redirectInfo.url
-      return res.send(url);
+      return res.send({url,token});
     })
     .catch(function (error) {
       session.abortTransaction()
@@ -272,8 +279,6 @@ async function Emitter(){
 const checkOrderStatus = asyncHandler(async(req,res)=>{
 
   const id = req.params?.id 
-
-  console.log(id)
 
   if(!id){
     throw new ApiError(400,"Invalid Id")

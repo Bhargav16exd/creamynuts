@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
 
 
 const orderSchema = new mongoose.Schema({
@@ -49,5 +50,22 @@ const orderSchema = new mongoose.Schema({
 
 },
 {timestamps: true})
+
+
+// Order Validation
+
+orderSchema.methods.generateToken = function(){
+
+    return jwt.sign({
+        id: this._id,
+        transactionId: this.transactionId
+    },
+    process.env.JWT_SECRET,
+    {
+        expiresIn: '10m'
+    })
+
+}
+
 
 export const Order = mongoose.model("Order", orderSchema)

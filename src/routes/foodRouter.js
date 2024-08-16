@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { addFoodToMenu, deleteFoodFromMenu, getFoodMenu, listFoodItems, updateFoodMenu } from "../controllers/food.controller.js";
 import { checkOrderStatus } from "../controllers/client.controller.js";
+import authMiddleware from "../middlewares/authMiddleware.js";
 
 
 
@@ -26,7 +27,7 @@ router.route('/foodList').post(listFoodItems)
 router.route('/listMenu').get(getFoodMenu)
 
 // Client checking his order status
-router.route('/checkStatus/:id').get(checkOrderStatus)
+router.route('/checkStatus/:id').get(authMiddleware,checkOrderStatus)
 
 
 
