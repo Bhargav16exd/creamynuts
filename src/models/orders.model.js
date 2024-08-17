@@ -30,6 +30,14 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    utr:{
+        type: String,
+        select: false
+    },
+    clientTransactionId:{
+        type: String,
+        select: false
+    },
     items:[{
         foodId:{
             type: mongoose.Schema.Types.ObjectId,

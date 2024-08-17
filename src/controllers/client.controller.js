@@ -186,6 +186,8 @@ const checkPayment = asyncHandler(async(req,res)=>{
 
             if(response.data?.code == 'PAYMENT_SUCCESS' ){
               orders.transactionStatus = "SUCCESS"
+              orders.utr = response.data.data.paymentInstrument.utr
+              orders.clientTransactionId = response.data.data.transactionId
               await orders.save()
               await Emitter()
                 if(orders.OTPcount == 0 ){
