@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addFoodToMenu, deleteFoodFromMenu, getFoodMenu, listFoodItems, updateFoodMenu } from "../controllers/food.controller.js";
+import { addFoodToMenu, deleteFoodFromMenu, getFoodMenu, listFoodItems, searchFood, updateFoodMenu } from "../controllers/food.controller.js";
 import { checkOrderStatus } from "../controllers/client.controller.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 
@@ -25,6 +25,10 @@ router.route('/foodList').post(listFoodItems)
 
 // User Routes
 router.route('/listMenu').get(getFoodMenu)
+
+//search food 
+
+router.route('/search/:name').get(searchFood)
 
 // Client checking his order status
 router.route('/checkStatus/:id').get(authMiddleware,checkOrderStatus)

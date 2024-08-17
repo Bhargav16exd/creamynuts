@@ -122,6 +122,25 @@ const listFoodItems = asyncHandler(async(req,res)=>{
 
 })
 
+const searchFood =  asyncHandler(async(req,res)=>{
+
+    const {name} = req.params;
+
+    if(!name){
+        throw new ApiError(400,"Kindly Provide Name")
+    }
+
+    const food = await Food.find({
+      name:{$regex : new RegExp(name,'igmu')}
+    })
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200,"Search Patient Success",food)
+    )
+})
 
 
-export {addFoodToMenu, deleteFoodFromMenu, updateFoodMenu, getFoodMenu,listFoodItems} 
+
+export {addFoodToMenu, deleteFoodFromMenu, updateFoodMenu, getFoodMenu,listFoodItems,searchFood} 
