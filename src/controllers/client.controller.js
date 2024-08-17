@@ -75,8 +75,8 @@ const payToPhonePay = asyncHandler(async (req, res) => {
       throw new ApiError(400,"Minimum Order Value is 50")
     }
 
-   const merchantTransactionIdByUs = Math.floor(Math.random() * 100000000000);
-   //const merchantTransactionIdByUs = "MT7850590068188104"
+  // const merchantTransactionIdByUs = Math.floor(Math.random() * 100000000000);
+   const merchantTransactionIdByUs = "MT7850590068188104"
   
   console.log(merchantTransactionIdByUs) 
 
@@ -281,14 +281,20 @@ const checkOrderStatus = asyncHandler(async(req,res)=>{
   const id = req.params?.id 
 
   if(id != req.order._id.toString()){
-    throw new ApiError(400,"Invalid Request")
+    throw new ApiError(401,"Unauthorized")
   }
 
   if(!id){
     throw new ApiError(400,"Invalid Id")
   }
 
-  const order = await Order.findById(id).select("customerName phoneNo transactionStatus transactionId price")
+  const order = await Order.findById(id).select("customerName phoneNo transactionStatus transactionId price items")
+
+  const foodNames = await Promise.all(order.items.map(async item => {
+    const food = await Food.findById(item.foodId);
+    return { name: food.name, OTP: item.OTP };
+  }));
+
 
   if(!order){
     throw new ApiError(400,"No Such Orders Exist")
@@ -296,7 +302,7 @@ const checkOrderStatus = asyncHandler(async(req,res)=>{
 
   return res
   .status(200)
-  .json( new ApiResponse (200, "Order Status Fetched Success", order))
+  .json( new ApiResponse (200, "Order Status Fetched Success", {order, foodNames}));
 
 })
 
