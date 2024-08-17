@@ -26,6 +26,10 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    OTPcount:{
+        type: Number,
+        default: 0
+    },
     items:[{
         foodId:{
             type: mongoose.Schema.Types.ObjectId,

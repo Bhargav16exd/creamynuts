@@ -75,10 +75,9 @@ const payToPhonePay = asyncHandler(async (req, res) => {
       throw new ApiError(400,"Minimum Order Value is 50")
     }
 
-   const merchantTransactionIdByUs = Math.floor(Math.random() * 100000000000);
-  // const merchantTransactionIdByUs = "MT7850590068188104"
+  // const merchantTransactionIdByUs = Math.floor(Math.random() * 100000000000);
+   const merchantTransactionIdByUs = "MT7850590068188104"
   
-  console.log(merchantTransactionIdByUs) 
 
   // Creating a payload to send to phonepe
 
@@ -183,11 +182,17 @@ const checkPayment = asyncHandler(async(req,res)=>{
         .request(options)
         .then(async function (response) {
 
+          console.log(response.data)
+
             if(response.data?.code == 'PAYMENT_SUCCESS' ){
               orders.transactionStatus = "SUCCESS"
               await orders.save()
               await Emitter()
-              await messeger(orders)
+                if(orders.OTPcount == 0 ){
+                  await messeger(orders)
+                  orders.OTPcount = 1
+                  await orders.save()
+                }
               return res.redirect(`${frontendURL}/payment/success/${orders._id}`)
             }
             else if(response.data?.code == 'PAYMENT_ERROR'){
