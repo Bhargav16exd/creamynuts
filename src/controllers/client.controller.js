@@ -295,7 +295,7 @@ const checkOrderStatus = asyncHandler(async(req,res)=>{
     throw new ApiError(400,"Invalid Id")
   }
 
-  const order = await Order.findById(id).select("customerName phoneNo transactionStatus transactionId price items")
+  const order = await Order.findById(id).select("customerName phoneNo transactionStatus utr price items")
 
   const foodNames = await Promise.all(order.items.map(async item => {
     const food = await Food.findById(item.foodId);
