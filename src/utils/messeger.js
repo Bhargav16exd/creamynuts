@@ -11,7 +11,7 @@ async function messeger(orderData){
       return { name: food.name, OTP: item.OTP };
     }));
   
-    const itemsString = foodNames.map(item => `- ${item.name}: OTP ${item.OTP}`).join('\n');
+    const itemsString = foodNames.map(item => ` ${item.name} : OTP ${item.OTP} `).join(',');
 
     const sanitizedItemsString = itemsString.replace(/[\n\r]/g, '');
   
