@@ -9,7 +9,7 @@ const addFoodToMenu = asyncHandler(async(req,res)=>{
 
     // Picture Uploading is pending need to fix it 
 
-    const {name , picture, price,category,time} = req.body
+    const {name , picture, price,category,time , description} = req.body
 
     if(!name || !price || !category || !time){
         throw new ApiError(400,"Please provide all the required fields")
@@ -20,7 +20,8 @@ const addFoodToMenu = asyncHandler(async(req,res)=>{
         picture,
         price,
         category,
-        time
+        time,
+        description
     }) 
 
     await food.save()
@@ -85,8 +86,30 @@ const updateFoodMenu = asyncHandler(async(req,res)=>{
 // Accessible to all users
 const getFoodMenu = asyncHandler(async(req,res)=>{
 
-    const food = await Food.find({})
-    const category = await Food.distinct('category')
+    let food = await Food.find({})
+    let category = await Food.distinct('category')
+
+    function randomNumber(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    
+    
+    function shuffle(arr){
+        let lastIndex = arr.length - 1 
+        while(lastIndex>0){
+            const randomIndex = randomNumber(0,lastIndex)
+            let temp = arr[lastIndex]
+            arr[lastIndex] = arr[randomIndex]
+            arr[randomIndex] = temp 
+            lastIndex -- 
+        }
+        return arr
+    }
+
+    food = shuffle(food)
+    category = Array.from(new Set(food.map(item => item.category)));
 
     const menu = {
         food: food,

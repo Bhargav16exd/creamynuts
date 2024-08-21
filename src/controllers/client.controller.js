@@ -21,13 +21,19 @@ const PRICE_CAP = process.env.PRICE_CAP
 const frontendURL = process.env.CLIENT_URL
 
 
+function generateAlphanumericId(length) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let id = '';
+  for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * chars.length);
+      id += chars[randomIndex];
+  }
+  return id;
+}
 
-// Pay to PhonePay API
 
-// This api will get order details
-// This api sends server to server call to phonepay server for payment processing
-// A payment gateway will open in the browser
-// After payment is done, phonepay will send a callback to the server
+
+
 
 const payToPhonePay = asyncHandler(async (req, res) => {
 
@@ -44,8 +50,7 @@ const payToPhonePay = asyncHandler(async (req, res) => {
   let totalPrice = 0 
   const orderItems = []
 
- 
-  // This loops go to each item sent by frontend and check whether the IDs exist IF not error and then create a array of Order ITEMS
+
   for (const item of items) {
     const food = await Food.findById(item.foodId);
 
@@ -75,9 +80,15 @@ const payToPhonePay = asyncHandler(async (req, res) => {
       throw new ApiError(400,"Minimum Order Value is 50")
     }
 
-   const merchantTransactionIdByUs = Math.floor(Math.random() * 100000000000);
-  // const merchantTransactionIdByUs = "MT7850590068188104"
-  
+   let merchantTransactionIdByUs = generateAlphanumericId(10)
+   //const merchantTransactionIdByUs = "MT7850590068188104"
+
+   
+    while (await Order.findOne({transactionId:merchantTransactionIdByUs})){
+     merchantTransactionIdByUs = generateAlphanumericId(10)
+    }
+   
+
 
   // Creating a payload to send to phonepe
 

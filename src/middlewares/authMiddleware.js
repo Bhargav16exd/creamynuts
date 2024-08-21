@@ -28,15 +28,13 @@ const authMiddleware = asyncHandler(async(req,res,next)=>{
 
 
     } catch (error) {
-       throw new ApiError(400,"Unauthorized")
+       throw new ApiError(400,"OTP PAGE EXPIRED")
     }
 })
 
 
 
 const authenticateSocket = async (socket, next) => {
-
-  console.log("hey")
 
   try {
 
