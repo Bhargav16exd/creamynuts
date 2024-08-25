@@ -40,7 +40,7 @@ async function getSubscriptions() {
 
 async function sendPushNotification(subscription, payload) {
   try {
-    await webPush.sendNotification(subscription, payload,options);
+    await webPush.sendNotification(subscription, payload);
   } catch (error) {
     console.error('Error sending push notification:', error);
   }
