@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import http from "http"
 import {Server} from 'socket.io'
+import  {Subscription}  from './models/Subscription.model.js';
 
 
 // Importing Routes
@@ -46,11 +47,18 @@ io.use((socket,next)=>{
 })
 
 
+
 // Routes
 app.use('/api/v1/admin', userRouter)
 app.use('/api/v1/menu',foodRouter )
 app.use('/api/v1/payment',paymentRouter)
 app.use('/api/v1/merchant',merchantRouter)
+
+app.post('/api/save-subscription', async (req, res) => {
+    const subscription = new Subscription(req.body);
+    await subscription.save();
+    res.status(201).json({ message: 'Subscription saved.' });
+});
 
 
 // Error Handling 

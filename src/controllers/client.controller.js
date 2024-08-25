@@ -2,14 +2,16 @@ import { ApiError } from "../utils/ApiError.js";
 import { Food } from "../models/food.model.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import axios from "axios";
-import mongoose from "mongoose";
+import mongoose, { get } from "mongoose";
 import { Order } from "../models/orders.model.js";
 import sha256 from "sha256";
 import io from "../app.js";
 import { messeger } from "../utils/messeger.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import generateUnique4DigitOTP from "../utils/OTP.js";
-
+import webPush from 'web-push';
+import {Subscription} from "../models/Subscription.model.js";
+import { options } from "../utils/Notification.js";
 
 
 const MERCHANT_ID = process.env.PHONE_PAY_MERCHANT_ID;
@@ -20,6 +22,7 @@ const APP_BE_URL = process.env.APP_BE_URL;
 const PRICE_CAP = process.env.PRICE_CAP
 const frontendURL = process.env.CLIENT_URL
 
+// Utility functions 
 
 function generateAlphanumericId(length) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -31,9 +34,22 @@ function generateAlphanumericId(length) {
   return id;
 }
 
+async function getSubscriptions() {
+  return await Subscription.find({});
+}
+
+async function sendPushNotification(subscription, payload) {
+  try {
+    await webPush.sendNotification(subscription, payload,options);
+  } catch (error) {
+    console.error('Error sending push notification:', error);
+  }
+}
 
 
 
+
+// API handling 
 
 const payToPhonePay = asyncHandler(async (req, res) => {
 
@@ -80,8 +96,8 @@ const payToPhonePay = asyncHandler(async (req, res) => {
       throw new ApiError(400,"Minimum Order Value is 50")
     }
 
-   let merchantTransactionIdByUs = generateAlphanumericId(10)
-   //const merchantTransactionIdByUs = "MT7850590068188104"
+     let merchantTransactionIdByUs = generateAlphanumericId(10)
+     //const merchantTransactionIdByUs = "MT7850590068188104"
 
    
     while (await Order.findOne({transactionId:merchantTransactionIdByUs})){
@@ -193,7 +209,6 @@ const checkPayment = asyncHandler(async(req,res)=>{
         .request(options)
         .then(async function (response) {
 
-          console.log(response.data)
 
             if(response.data?.code == 'PAYMENT_SUCCESS' ){
               orders.transactionStatus = "SUCCESS"
@@ -202,9 +217,25 @@ const checkPayment = asyncHandler(async(req,res)=>{
               await orders.save()
               await Emitter()
                 if(orders.OTPcount == 0 ){
+ 
+                  const subscription = await getSubscriptions();
+
+                  const payload = JSON.stringify({
+                    title: 'New Order is Placed',
+                    body: `${orders.customerName} placed an order`,
+                    icon: '/path/to/icon.png'
+                  });
+                
+                   
+                  subscription.forEach(subscription => {
+                    sendPushNotification(subscription, payload);
+                  });
+
+
                   await messeger(orders)
                   orders.OTPcount = 1
                   await orders.save()
+
                 }
               return res.redirect(`${frontendURL}/payment/success/${orders._id}`)
             }
@@ -221,6 +252,9 @@ const checkPayment = asyncHandler(async(req,res)=>{
 
 
 })
+
+
+
 
 async function Emitter(){
   
@@ -256,9 +290,7 @@ async function Emitter(){
     }
   ]);
   
-  //orders.items.map(item => console.log(item))
   
-
   const ordersWithAMPM = orders.map(order => {
     const createdAtAMPM = order.createdAt.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true , timeZone: 'Asia/Kolkata'});
     return { 
@@ -282,7 +314,6 @@ async function Emitter(){
  
   const distinctFoods = await Food.find({ _id: { $in: distinctOrdersId } }).select("name");
 
-  console.log(distinctFoods)
    
   const orderData = {
      ordersWithAMPM,
@@ -291,7 +322,10 @@ async function Emitter(){
   
 
   io.emit("allOrders", orderData);
+
 }
+
+
 
 
 const checkOrderStatus = asyncHandler(async(req,res)=>{
