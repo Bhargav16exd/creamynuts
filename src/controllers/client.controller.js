@@ -96,13 +96,13 @@ const payToPhonePay = asyncHandler(async (req, res) => {
       throw new ApiError(400,"Minimum Order Value is 50")
     }
 
-     let merchantTransactionIdByUs = generateAlphanumericId(10)
-     //const merchantTransactionIdByUs = "MT7850590068188104"
+    // let merchantTransactionIdByUs = generateAlphanumericId(10)
+     const merchantTransactionIdByUs = "MT7850590068188104"
 
    
-    while (await Order.findOne({transactionId:merchantTransactionIdByUs})){
-     merchantTransactionIdByUs = generateAlphanumericId(10)
-    }
+    // while (await Order.findOne({transactionId:merchantTransactionIdByUs})){
+    //  merchantTransactionIdByUs = generateAlphanumericId(10)
+    // }
    
 
 

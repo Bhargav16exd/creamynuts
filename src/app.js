@@ -54,15 +54,16 @@ app.use('/api/v1/menu',foodRouter )
 app.use('/api/v1/payment',paymentRouter)
 app.use('/api/v1/merchant',merchantRouter)
 
-app.post('/api/save-subscription', async (req, res) => {
-    const subscription = new Subscription(req.body);
-    await subscription.save();
-    res.status(201).json({ message: 'Subscription saved.' });
-});
+// app.post('/api/save-subscription', async (req, res) => {
+//     const subscription = new Subscription(req.body);
+//     await subscription.save();
+//     res.status(201).json({ message: 'Subscription saved.' });
+// });
 
 
 // Error Handling 
 app.use((err, req, res, next) => {
+
     const statusCode = err.statusCode || 500;
     const message = err.message ;
     const errors = err.errors || [];

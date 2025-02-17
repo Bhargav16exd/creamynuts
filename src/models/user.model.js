@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken"
 
 const userSchema = new mongoose.Schema({
 
-
     userId: {
         type: String,
         required: true,

@@ -2,22 +2,32 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { Food } from "../models/food.model.js";
+import { removeImage, upload } from "../utils/upload.js";
 
 
 // Admins Options ONLY
 const addFoodToMenu = asyncHandler(async(req,res)=>{
 
-    // Picture Uploading is pending need to fix it 
-
-    const {name , picture, price,category,time , description} = req.body
+    const {name , price, category , time , description} = req.body
 
     if(!name || !price || !category || !time){
         throw new ApiError(400,"Please provide all the required fields")
     }
 
+    if(!req.file){
+        throw new ApiError(400,"Please provide an image")
+    }
+
+    const {secure_url , public_id} = await upload(req.file.path)
+
+    if(!secure_url || !public_id){
+        throw new ApiError(500,"Image upload failed")
+    }
+
     const food = await Food.create({
         name,
-        picture,
+        picture:secure_url,
+        pictureId:public_id,
         price,
         category,
         time,
@@ -39,18 +49,18 @@ const deleteFoodFromMenu = asyncHandler(async(req,res)=>{
     if(!id){
         throw new ApiError(400,"Please provide all the required fields")
     }
-
     const food = await Food.findById(id)
 
     if(!food){
         throw new ApiError(404,"Food not found")
     }
 
+    await removeImage(food.pictureId)
     await Food.findByIdAndDelete(id)
 
     return res
     .status(200)
-    .json(new ApiResponse(200, "Food deleted successfully", food))
+    .json(new ApiResponse(200, "Food deleted successfully"))
 
 })
 
@@ -58,11 +68,12 @@ const deleteFoodFromMenu = asyncHandler(async(req,res)=>{
 const updateFoodMenu = asyncHandler(async(req,res)=>{
 
     const {id} = req.params
-    const {name, picture, price} = req.body
+    const {name,description, price,category,time} = req.body
 
-    if(!id || !name || !price){
+    if(!id ){
         throw new ApiError(400,"Please provide all the required fields")
     }
+
 
     const food = await Food.findById(id)
 
@@ -70,9 +81,25 @@ const updateFoodMenu = asyncHandler(async(req,res)=>{
         throw new ApiError(404,"Food not found")
     }
 
+    if(req.file){
+
+        const {secure_url , public_id} = await upload(req.file.path)
+
+        if(!secure_url || !public_id){
+            throw new ApiError(500,"Image upload failed")
+        }
+
+        await removeImage(food.pictureId)
+        
+        food.picture = secure_url
+        food.pictureId = public_id
+    }
+
     food.name = name
-    food.picture = picture
     food.price = price
+    food.category = category
+    food.time = time
+    food.description = description
 
     await food.save()
 
