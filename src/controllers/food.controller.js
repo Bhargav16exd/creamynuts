@@ -192,6 +192,25 @@ const searchFood =  asyncHandler(async(req,res)=>{
     )
 })
 
+const singleFoodItem = asyncHandler(async(req,res)=>{
+
+    const {id} = req.params
+
+    if(!id){
+        throw new ApiError(400,"Please provide all the required fields")
+    }
+
+    const food = await Food.findById(id)
+
+    if(!food){
+        throw new ApiError(404,"Food not found")
+    }
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, "Food Item", food))
+})
 
 
-export {addFoodToMenu, deleteFoodFromMenu, updateFoodMenu, getFoodMenu,listFoodItems,searchFood} 
+
+export {addFoodToMenu, deleteFoodFromMenu, updateFoodMenu, getFoodMenu,listFoodItems,searchFood,singleFoodItem} 
