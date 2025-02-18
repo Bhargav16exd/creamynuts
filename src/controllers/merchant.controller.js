@@ -136,7 +136,42 @@ const confirmOrder = asyncHandler(async(req,res)=>{
 
 })
 
+const getTodaysEarning = asyncHandler(async(req,res)=>{
+
+   // Get Todays Earning Function
+   // Get Start of the day and find order greater than it
+
+   const today = new Date();
+   today.setHours(0, 0, 0, 0);
+
+   const totalEarning = await Order.aggregate([
+      {
+        $match:{
+          transactionStatus: "SUCCESS",
+          createdAt: { $gte: today }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalEarning: { $sum: "$price" }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          totalEarning: 1
+        }
+      }
+   ])
+
+   return res
+    .status(200)
+    .json(new ApiResponse(200,"Earning Fetched Success", totalEarning[0].totalEarning))
+
+})
 
 
 
-export {confirmOrder}
+
+export {confirmOrder,getTodaysEarning}

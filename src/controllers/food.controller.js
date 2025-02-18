@@ -14,6 +14,7 @@ const addFoodToMenu = asyncHandler(async(req,res)=>{
         throw new ApiError(400,"Please provide all the required fields")
     }
 
+
     if(!req.file){
         throw new ApiError(400,"Please provide an image")
     }
@@ -38,7 +39,7 @@ const addFoodToMenu = asyncHandler(async(req,res)=>{
 
     return res
     .status(201)
-    .json(new ApiResponse(201, "Food added successfully", food))
+    .json(new ApiResponse(201, "Food added successfully"))
 
 })
 
