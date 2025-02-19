@@ -165,6 +165,12 @@ const getTodaysEarning = asyncHandler(async(req,res)=>{
       }
    ])
 
+   if(totalEarning.length === 0){
+     return res
+     .status(200)
+     .json(new ApiResponse(200,"No Earning for today", 0))
+   }
+
    return res
     .status(200)
     .json(new ApiResponse(200,"Earning Fetched Success", totalEarning[0].totalEarning))
